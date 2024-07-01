@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy de Acuerdos Comerciales Internacionales</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            background-color: #060ce9;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .category {
+            background-color: #060ce9;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .question {
+            background-color: #060ce9;
+            color: #d69f4c;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .question:hover {
+            background-color: #0509b8;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #060ce9;
+            color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-board">
+        <div class="category">Unión Europea</div>
+        <div class="category">TMEC</div>
+        <div class="category">APEC</div>
+        <div class="category">TLCUEM</div>
+        
+        <div class="question" data-value="200" data-category="Unión Europea" onclick="showQuestion(this)">$200</div>
+        <div class="question" data-value="200" data-category="TMEC" onclick="showQuestion(this)">$200</div>
+        <div class="question" data-value="200" data-category="APEC" onclick="showQuestion(this)">$200</div>
+        <div class="question" data-value="200" data-category="TLCUEM" onclick="showQuestion(this)">$200</div>
+        
+        <div class="question" data-value="400" data-category="Unión Europea" onclick="showQuestion(this)">$400</div>
+        <div class="question" data-value="400" data-category="TMEC" onclick="showQuestion(this)">$400</div>
+        <div class="question" data-value="400" data-category="APEC" onclick="showQuestion(this)">$400</div>
+        <div class="question" data-value="400" data-category="TLCUEM" onclick="showQuestion(this)">$400</div>
+        
+        <div class="question" data-value="600" data-category="Unión Europea" onclick="showQuestion(this)">$600</div>
+        <div class="question" data-value="600" data-category="TMEC" onclick="showQuestion(this)">$600</div>
+        <div class="question" data-value="600" data-category="APEC" onclick="showQuestion(this)">$600</div>
+        <div class="question" data-value="600" data-category="TLCUEM" onclick="showQuestion(this)">$600</div>
+        
+        <div class="question" data-value="800" data-category="Unión Europea" onclick="showQuestion(this)">$800</div>
+        <div class="question" data-value="800" data-category="TMEC" onclick="showQuestion(this)">$800</div>
+        <div class="question" data-value="800" data-category="APEC" onclick="showQuestion(this)">$800</div>
+        <div class="question" data-value="800" data-category="TLCUEM" onclick="showQuestion(this)">$800</div>
+        
+        <div class="question" data-value="1000" data-category="Unión Europea" onclick="showQuestion(this)">$1000</div>
+        <div class="question" data-value="1000" data-category="TMEC" onclick="showQuestion(this)">$1000</div>
+        <div class="question" data-value="1000" data-category="APEC" onclick="showQuestion(this)">$1000</div>
+        <div class="question" data-value="1000" data-category="TLCUEM" onclick="showQuestion(this)">$1000</div>
+    </div>
+
+    <div id="questionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="questionText"></h2>
+            <p id="answerText" style="display: none;"></p>
+            <button onclick="showAnswer()">Mostrar Respuesta</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            "Unión Europea": {
+                200: {q: "¿En qué año se estableció formalmente la Unión Europea?", a: "1993 (Tratado de Maastricht)"},
+                400: {q: "¿Qué país se unió más recientemente a la UE?", a: "Croacia (en 2013)"},
+                600: {q: "¿Cuál es el nombre de la unión monetaria de la UE?", a: "La Eurozona"},
+                800: {q: "¿Qué país celebró un referéndum para salir de la UE en 2016?", a: "Reino Unido (Brexit)"},
+                1000: {q: "Nombra la rama ejecutiva de la UE.", a: "La Comisión Europea"}
+            },
+            "TMEC": {
+                200: {q: "¿Qué significa TMEC?", a: "Tratado México-Estados Unidos-Canadá"},
+                400: {q: "¿Qué acuerdo reemplazó el TMEC?", a: "TLCAN (Tratado de Libre Comercio de América del Norte)"},
+                600: {q: "¿En qué año entró en vigor el TMEC?", a: "2020"},
+                800: {q: "¿Qué nuevo capítulo en el TMEC aborda el comercio digital?", a: "Capítulo 19: Comercio Digital"},
+                1000: {q: "¿Qué porcentaje de contenido automotriz norteamericano se requiere según las reglas de origen del TMEC?", a: "75%"}
+            },
+            "APEC": {
+                200: {q: "¿Qué significa APEC?", a: "Foro de Cooperación Económica Asia-Pacífico"},
+                400: {q: "¿Cuántas economías miembro tiene APEC?", a: "21"},
+                600: {q: "¿En qué año se fundó APEC?", a: "1989"},
+                800: {q: "¿Cuál es el nombre de la reunión anual de líderes de APEC?", a: "Reunión de Líderes Económicos de APEC"},
+                1000: {q: "¿Qué iniciativa de APEC busca facilitar los viajes de negocios en la región?", a: "Tarjeta de Viajes de Negocios de APEC (ABTC)"}
+            },
+            "TLCUEM": {
+                200: {q: "¿Qué significa TLCUEM?", a: "Tratado de Libre Comercio entre la Unión Europea y México"},
+                400: {q: "¿En qué año entró en vigor el TLCUEM original?", a: "2000"},
+                600: {q: "¿Qué producto mexicano recibió designación protegida bajo el TLCUEM?", a: "Tequila"},
+                800: {q: "¿En qué año se acordó en principio el TLCUEM modernizado?", a: "2018"},
+                1000: {q: "Nombra una área clave de cooperación añadida en el TLCUEM modernizado.", a: "Posibles respuestas: Comercio digital, Derechos de propiedad intelectual, o Desarrollo sostenible"}
+            }
+        };
+
+        function showQuestion(element) {
+            const value = element.getAttribute('data-value');
+            const category = element.getAttribute('data-category');
+            const question = questions[category][value];
+            
+            document.getElementById('questionText').textContent = question.q;
+            document.getElementById('answerText').textContent = question.a;
+            document.getElementById('answerText').style.display = 'none';
+            document.getElementById('questionModal').style.display = 'block';
+            
+            element.style.visibility = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('questionModal').style.display = 'none';
+        }
+
+        function showAnswer() {
+            document.getElementById('answerText').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
